@@ -1,0 +1,49 @@
+import csv,time
+import pandas as pd
+from WWO import *
+
+dim = 100
+lb = -100
+ub = 100
+iter_num = 1000
+size = 50
+dic = {}
+t1 = time.time()
+# Using all functions:
+from cec2017.functions import all_functions
+n = 0
+
+def constraints(x):
+    g1 = 0
+    g2 = 0
+    for i in range(len(x)):
+        g1 = g1 + (-x[i] * sin(2 * x[i]))
+        g2 = g2 + x[i] * sin(x[i])
+    g = max(g1, 0) + max(g2, 0)
+    # return g/2
+    return 0
+
+for f in all_functions:
+    print(f"{f.__name__}")
+    # if  f.__name__ not in ['f16','f17','f18','f19','f20','f21','f22','f23','f24','f25','f26','f27','f28','f29','f30']:
+    #    continue
+    ee = []
+    for c in range(30):
+        a, b, curve = WWO(size, 1000, [ub for iI in range(dim)], [lb for iII in range(dim)], dim, f)
+        dic[f.__name__] = curve
+        print('{:.4E}'.format(a))
+        ee.append(a)
+    nparr = np.array(ee)
+    print('BEST：%.4E WORST：%.4E MEAN：%.4E  STD：%.4E'% (nparr.min(),nparr.max(),nparr.mean(),nparr.std()) )
+    print('%.2E' % nparr.min())
+    print('%.2E' % nparr.mean())
+    print('%.2E' % nparr.std())
+    print('======')
+    print('%.4E' % nparr.min())
+    print('%.4E' % nparr.mean())
+    print('%.4E' % nparr.std())
+
+t2 = time.time()
+print(t2-t1)
+df = pd.DataFrame(dic)
+df.to_excel(r'C:\Users\exper\Desktop\CEC2017\WWO.xls', sheet_name='WWO')
